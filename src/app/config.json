@@ -1,0 +1,17 @@
+{
+  "boardColors": {
+    "bot": "var(--bot-square)",
+    "fruit": "var(--fruit-square)",
+    "p1": "var(--p1-square)",
+    "p2": "var(--p2-square)",
+    "empty": "var(--empty-square)"
+  },
+  "p1": {
+    "id": "player1",
+    "startPos": [{ "x": 2, "y": 0 }, { "x": 2, "y": 1 }, { "x": 2, "y": 2 }]
+  },
+  "p2": {
+    "id": "player2",
+    "startPos": []
+  }
+}
