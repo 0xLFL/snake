@@ -5,6 +5,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --bot-square: blue;
+  --fruit-square: red;
+  --p1-square: green;
+  --p2-square: yellow;
+  --empty-square: white;
 }
 
 @media (prefers-color-scheme: dark) {
