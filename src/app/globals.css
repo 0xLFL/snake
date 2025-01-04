@@ -10,7 +10,7 @@
   --fruit-square: red;
   --p1-square: green;
   --p2-square: yellow;
-  --empty-square: white;
+  --empty-square: black;
 }
 
 @media (prefers-color-scheme: dark) {

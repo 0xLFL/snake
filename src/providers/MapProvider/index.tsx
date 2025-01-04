@@ -1,11 +1,12 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import config from '@/app/config.json';
 
 const {
   p1,
-  p2
+  p2,
+  difficulty: diff
 } = config;
 
 export enum GameMode {
@@ -34,13 +35,20 @@ export interface Pos {
   y: number,
 }
 
+export enum Difficulty {
+  easy,
+  normal,
+  hard,
+}
+
 type MapContextType = {
-  initMap: (width: number, height: number, gameMode: GameMode) => void;
+  initMap: (width: number, height: number, gameMode: GameMode, difficulty: Difficulty) => void;
   gameMode: GameMode | null;
   status: Status | null;
   size: Pos | null;
   randomPos: () => Pos;
   updateStatus: (status: Status) => void;
+  getChanceFromDifficalty: () => number;
 };
 
 /**
@@ -65,6 +73,7 @@ function useMapHook (): MapContextType {
   const [size, setSize] = useState<Pos | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
 
   /**
    * 
@@ -72,10 +81,11 @@ function useMapHook (): MapContextType {
    * @param height 
    * @param gameMode 
    */
-  const initMap = (width: number, height: number, gameMode: GameMode) => {
+  const initMap = (width: number, height: number, gameMode: GameMode, difficulty: Difficulty) => {
     setSize({ x: width, y: height });
     setStatus(Status.pending);
     setGameMode(gameMode);
+    setDifficulty(difficulty)
   }
 
   /**
@@ -84,6 +94,14 @@ function useMapHook (): MapContextType {
    */
   const updateStatus = (status: Status) => {
     setStatus(status);
+  }
+
+  const getChanceFromDifficalty = () => {
+    switch (difficulty) {
+      case Difficulty.easy: return diff.easy;
+      case Difficulty.normal: return diff.normal;
+      case Difficulty.hard: return diff.hard;
+    }
   }
 
   /**
@@ -115,6 +133,7 @@ function useMapHook (): MapContextType {
     size,
     randomPos,
     updateStatus,
+    getChanceFromDifficalty,
   };
 }
 
