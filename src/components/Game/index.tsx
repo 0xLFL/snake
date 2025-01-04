@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { GameMode, PosType } from '@/objects/map/index';
 import { useGame } from '@/providers/GameProvider/index';
+import { GameMode, PosType } from '@/providers/MapProvider/index';
+import './index.css';
 
 const Game = () => {
   const {
@@ -20,32 +21,28 @@ const Game = () => {
     const squares = [];
     for (let i = 0; i < height; i++) {
       for (let j = 0; j < width; j++) {
-        let color;
+        let className;
         switch (items[`${String(j).padStart(3, '0')}_${String(i).padStart(3, '0')}`]) {
           case PosType.bot:
-            color = 'var(--bot-square)';
+            className = 'bot';
             break;
           case PosType.fruit:
-            color = 'var(--fruit-square)';
+            className = 'fruit';
             break;
           case PosType.p1:
-            color = 'var(--p1-square)';
+            className = 'p1';
             break;
           case PosType.p2:
-            color = 'var(--p2-square)';
+            className = 'p2';
             break;
           default:
-            color = 'var(--empty-square)';
+            className = 'empty';
         }
 
         squares.push(
           <div
             key={`${j}_${i}`} // Unique key for each square
-            style={{
-              backgroundColor: color,
-              width: '100%', 
-              height: '100%',
-            }}
+            className={`game-square ${className}`}
           />
         );
       }
@@ -57,18 +54,18 @@ const Game = () => {
   return (
     <div>
       <button onClick={() => initGame(GameMode.classic)}>Init classic</button>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${width}, 1fr)`, // Dynamically set the grid columns
-          gridTemplateRows: `repeat(${height}, 1fr)`, // Dynamically set the grid rows
-          width: '100%',
-          height: '100%',
-          minWidth: '60vw',
-          minHeight: '60vw'
-        }}
-      >
-        {GenSquares()}
+      <button onClick={() => initGame(GameMode.vsPlayer)}>Init vs</button>
+      <button onClick={() => initGame(GameMode.vsPlayer)}>Init vs Bot</button>
+      <div>
+        <div
+          className='game-board'
+          style={{
+            gridTemplateColumns: `repeat(${width}, 1fr)`, // Dynamically set the grid columns
+            gridTemplateRows: `repeat(${height}, 1fr)`, // Dynamically set the grid rows
+          }}
+        >
+          {GenSquares()}
+        </div>
       </div>
     </div>
   );

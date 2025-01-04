@@ -1,8 +1,7 @@
 'use client';
 
-import { GameMode, PosType } from '@/objects/map/index';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { Status, useMap } from '../MapProvider/index';
+import { GameMode, PosType, Status, useMap } from '../MapProvider/index';
 import { useItem } from '../ItemProvider/index';
 
 type GameContextType = {
@@ -33,6 +32,12 @@ function useGameHook (): GameContextType {
     init(20, 20, gameMode);
   }
 
+  const next_ = () => {
+    for (const id of Object.keys(snakes)) {
+      next(id);
+    }
+  }
+
   // listener for user input
   useEffect(() => {
     const setDir = (event: KeyboardEvent) => {
@@ -43,20 +48,31 @@ function useGameHook (): GameContextType {
       if (handledKeys.includes(event.key)) {
         event.preventDefault();
         setSnakeDir(event.key);
-      } else if (event.key === ' ') {
-        /** For testing */
-        event.preventDefault();
-        for (const id of Object.keys(snakes)) {
-          next(id);
-        }
       }
     };
 
     document.addEventListener('keydown', setDir);
+
+    const nextInterval = setInterval(() => {
+      if (status === Status.pending) {
+        next_();
+      }
+    }, 100);
     return () => {
       document.removeEventListener('keydown', setDir);
+      clearInterval(nextInterval);
     };
-  }, [status, snakes]);
+  }, [status, snakes, next_]);
+
+  useEffect(() => {
+    if (status === Status.draw) {
+      window.alert('Game drawn')
+    } else if (status === Status.p1Win) {
+      window.alert('Player 1 Wins')
+    } else if (status === Status.p2Win) {
+      window.alert('Player 2 Wins')
+    }
+  }, [status])
 
   return {
     initGame,
