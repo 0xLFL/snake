@@ -3,18 +3,26 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { GameMode, PosType, Status, useMap } from '../MapProvider/index';
 import { useItem } from '../ItemProvider/index';
+import config from '@/app/config.json';
+
+const {
+  p1
+} = config;
 
 type GameContextType = {
   initGame: (gameMode: GameMode) => void;
   width: number | undefined,
   height: number | undefined,
   items: Record<string, PosType> | undefined;
+  highScore: number,
+  score: number,
 };
 
 function useGameHook (): GameContextType {
   const {
     size,
-    status
+    status,
+    gameMode,
   } = useMap();
   const {
     handledKeys,
@@ -23,6 +31,7 @@ function useGameHook (): GameContextType {
     init,
     getItems,
     snakes,
+    getScore,
   } = useItem();
 
   /**
@@ -74,11 +83,21 @@ function useGameHook (): GameContextType {
     }
   }, [status])
 
+  useEffect(() => {
+    const highScore = parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0');
+    const score = getScore(p1.id) || 0;
+    if (score > highScore) {
+      localStorage.setItem(`high_score_${gameMode}`, score.toString());
+    }
+  }, [getScore(p1.id)]);
+
   return {
     initGame,
     width: size?.x,
     height: size?.y,
     items: getItems(),
+    highScore: parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0'),
+    score: getScore(p1.id) || 0,
   };
 }
 

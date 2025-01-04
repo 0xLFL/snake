@@ -4,6 +4,7 @@ import React from 'react';
 import { useGame } from '@/providers/GameProvider/index';
 import { GameMode, PosType } from '@/providers/MapProvider/index';
 import './index.css';
+import GameScores from '../GameScores/index';
 
 const Game = () => {
   const {
@@ -55,8 +56,9 @@ const Game = () => {
     <div>
       <button onClick={() => initGame(GameMode.classic)}>Init classic</button>
       <button onClick={() => initGame(GameMode.vsPlayer)}>Init vs</button>
-      <button onClick={() => initGame(GameMode.vsPlayer)}>Init vs Bot</button>
+      <button onClick={() => initGame(GameMode.vsBot)}>Init vs Bot</button>
       <div>
+        <GameScores />
         <div
           className='game-board'
           style={{

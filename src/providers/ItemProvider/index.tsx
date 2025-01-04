@@ -28,6 +28,7 @@ interface SnakeState {
   nextDir: Dir;
   moveCount: number;
   posType: PosType;
+  score: number;
 }
 
 interface SnakeAction {
@@ -46,10 +47,7 @@ interface ItemContextProps {
   eatFruit: (posString: string) => void;
   getItems: () => Record<string, PosType>;
   init: (width: number, height: number, gameMode: GameMode) => void;
-}
-
-interface CostPos extends Pos {
-  cost: number
+  getScore: (id: string) => number | undefined
 }
 
 const snakeReducer = (state: Record<string, SnakeState>, action: { id: string; action: SnakeAction; }) => {
@@ -74,6 +72,7 @@ const snakeReducer = (state: Record<string, SnakeState>, action: { id: string; a
           positions: snakeAction.payload,
           currDir: snake.nextDir,
           moveCount: snake.moveCount + 1,
+          score: (snakeAction.payload.length - 3) * 10,
         },
       };
     }
@@ -112,6 +111,15 @@ const useItemHook = (): ItemContextProps => {
     dispatch({ id, action: { type: 'RESET', payload: initialState } });
   };
 
+  /**
+   * deletes a given snake
+   * @param id snake id 
+   */
+   const deleteSnake = (id: string) => {
+    dispatch({ id, action: { type: 'RESET' } });
+  };
+
+
 
   /**
    * Creates a map of the given stakes current positions
@@ -137,17 +145,21 @@ const useItemHook = (): ItemContextProps => {
    * @param id id of the snake that should move to the next position
    */
   const next = (id: string): void => {
+    if (!state[id]) {
+      return;
+    }
+
     dispatch({ id, action: { type: 'MOVE_NEXT', payload: next_(id) } });
   };
 
   /**
    * calulates the snakes next position
-   * @param id id of the snake that should move to the next position
+   * @param id Id of the snake that should move to the next position
    * @returns Array of type Pos with that next positions of snake
    */
   const next_ = (id: string): Pos[] => {
     const snake = state[id];
-  
+
     if (!size) {
       return snake.positions;
     }
@@ -495,7 +507,8 @@ const useItemHook = (): ItemContextProps => {
       currDir: Dir.down,
       nextDir: Dir.down,
       moveCount: 0,
-      posType: PosType.p1
+      posType: PosType.p1,
+      score: 0,
     });
     console.log(state)
 
@@ -506,14 +519,15 @@ const useItemHook = (): ItemContextProps => {
    * Inits player two
    * @param gameMode the selected game mode
    */
-  const initP2 = (gameMode: GameMode): string | null => {
+  const initP2 = (gameMode: GameMode): void => {
     const {
       startPos,
       id,
     } = p2;
+
     switch (gameMode) {
       case GameMode.vsPlayer:
-        createSnake(id, {
+        return createSnake(id, {
           positions: (startPos as Pos[]).map(({x, y}) => {
             return {
               x: x + (size ? size.x : 0),
@@ -523,11 +537,12 @@ const useItemHook = (): ItemContextProps => {
           currDir: Dir.up,
           nextDir: Dir.up,
           moveCount: 0,
-          posType: PosType.p2
+          posType: PosType.p2,
+          score: 0,
         });
 
       case GameMode.vsBot:
-        createSnake(id, {
+        return createSnake(id, {
           positions: (startPos as Pos[]).map(({x, y}) => {
             return {
               x: x + (size ? size.x : 0),
@@ -537,11 +552,11 @@ const useItemHook = (): ItemContextProps => {
           currDir: Dir.up,
           nextDir: Dir.up,
           moveCount: 0,
-          posType: PosType.bot
+          posType: PosType.bot,
+          score: 0
         });
+      default: return deleteSnake(p2.id);
     }
-    
-    return null;
   }
 
   /**
@@ -603,8 +618,11 @@ const useItemHook = (): ItemContextProps => {
    */
   const getPosMap = (snake: SnakeState): Record<string, PosType> => {
     const map: Record<string, PosType> = {};
-    for (const pos of snake.positions) {
-      map[formatPos(pos)] = snake.posType;
+
+    if (snake) {
+      for (const pos of snake.positions) {
+        map[formatPos(pos)] = snake.posType;
+      }
     }
 
     return map;
@@ -697,6 +715,10 @@ const useItemHook = (): ItemContextProps => {
 
     return map;
   }
+  
+  const getScore = (id: string): number | undefined => {
+    return state[id]?.score;
+  }
 
   /**
    * sets the status of the game based off what
@@ -743,7 +765,8 @@ const useItemHook = (): ItemContextProps => {
     ],
     getItems,
     eatFruit,
-    init
+    init,
+    getScore
   }
 }
 
