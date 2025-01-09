@@ -51,6 +51,8 @@ interface ItemContextProps {
   playAgain: () => void;
   p1Keys: string[];
   p2Keys: string[];
+  p1Score: number;
+  p2Score: number;
 }
 
 const snakeReducer = (state: Record<string, SnakeState>, action: { id: string; action: SnakeAction; }) => {
@@ -96,7 +98,8 @@ const useItemHook = (): ItemContextProps => {
     gameMode,
     updateStatus,
     randomPos,
-    getChanceFromDifficalty
+    getChanceFromDifficalty,
+    status,
   } = useMap();
 
   const [state, dispatch] = useReducer(snakeReducer, {});
@@ -104,6 +107,9 @@ const useItemHook = (): ItemContextProps => {
   const [initFlag, setInitFlag] = useState<boolean>(false);
   const p1Controlls = ['w', 's', 'a', 'd'];
   const p2Controlls = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+  const [p1Score, setP1Score] = useState(0);
+  const [p2Score, setP2Score] = useState(0);
 
   /**
    * Creates a snake
@@ -121,8 +127,6 @@ const useItemHook = (): ItemContextProps => {
    const deleteSnake = (id: string) => {
     dispatch({ id, action: { type: 'RESET' } });
   };
-
-
 
   /**
    * Creates a map of the given stakes current positions
@@ -189,7 +193,7 @@ const useItemHook = (): ItemContextProps => {
       reportContact(
         id,
         snake.moveCount,
-        move
+        formatPos(move),
       );
       
       return snake.positions;
@@ -209,7 +213,7 @@ const useItemHook = (): ItemContextProps => {
       reportContact(
         id,
         snake.moveCount,
-        move,
+        formatPos(move),
       );
   
       return positions;
@@ -755,8 +759,10 @@ const useItemHook = (): ItemContextProps => {
       updateStatus(Status.draw);
     } else if (id === p1.id) {
       updateStatus(Status.p2Win);
+      setP2Score(p2Score + 1);
     } else {
       updateStatus(Status.p1Win);
+      setP1Score(p1Score + 1);
     }
   }
 
@@ -768,6 +774,13 @@ const useItemHook = (): ItemContextProps => {
       setInitFlag(false)
     }
   }, [size, gameMode, state, initFlag]);
+
+  useEffect(() => {
+    if (status === Status.setup) {
+      setP1Score(0);
+      setP2Score(0);
+    }
+  }, [status])
 
   return {
     snakes: state,
@@ -786,6 +799,8 @@ const useItemHook = (): ItemContextProps => {
     init,
     getScore,
     playAgain,
+    p1Score,
+    p2Score,
   }
 }
 

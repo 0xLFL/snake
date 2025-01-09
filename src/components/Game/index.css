@@ -6,14 +6,11 @@
   aspect-ratio: 1 / 1;
 
   width: 100%;
-  min-width: 60vw;
-  min-height: 60vw;
-  max-width: 90vh;
-  max-height: 90vh;
+  height: auto;
+  width: min(80vw, 90vh);
 }
 
 .game-square {
-  width: 100%; 
   aspect-ratio: 1 / 1;
   max-height: 100%;
   max-width: 100%;
@@ -90,4 +87,16 @@
 .game-setup-button-container {
   display: flex;
   gap: 4vw;
+}
+
+.game-score-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 90vh;
+}
+
+.game-score-container.center {
+  justify-content: center
 }

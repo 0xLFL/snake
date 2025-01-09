@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, ReactNode, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useCallback } from 'react';
 import { Difficulty, GameMode, PosType, Status, useMap } from '../MapProvider/index';
 import { useItem } from '../ItemProvider/index';
 import config from '@/app/config.json';
@@ -15,8 +15,8 @@ type GameContextType = {
   width: number | undefined,
   height: number | undefined,
   items: Record<string, PosType> | undefined;
-  highScore: number,
-  score: number,
+  highScore: number;
+  score: number;
   restartBot: (delay?: boolean) => void;
 };
 
@@ -39,11 +39,9 @@ function useGameHook (): GameContextType {
     getScore,
     playAgain: playAgainItems,
     p1Keys,
-    p2Keys
+    p2Keys,
   } = useItem();
 
-  const [past, setPast] = useState(0);
-  const [keyPressed, setKeyPressed] = useState(false);
   /**
    * Initialises a game of snake
    */
@@ -69,7 +67,6 @@ function useGameHook (): GameContextType {
       } 
 
       if (handledKeys.includes(event.key)) {
-        setKeyPressed(true);
         event.preventDefault();
         setSnakeDir(event.key); // Update direction
       }
@@ -81,9 +78,7 @@ function useGameHook (): GameContextType {
 
   const restartBot = async (delay_?: boolean) => {
     if (delay_) {
-      console.warn('*****')
       await delay(1500);
-      console.warn('&&&')
     }
     init(20, 20, GameMode.bot, Difficulty.easy);
     updateStatus(Status.setup);
@@ -97,13 +92,11 @@ function useGameHook (): GameContextType {
   }, [setDir]);
 
   useEffect(() => {
-    console.log(status)
     if (status !== Status.pending && status !== Status.setup) {
       return;
     }
 
     const interval = setInterval(() => {
-      console.log('####')
       next();
     }, 100);
 
