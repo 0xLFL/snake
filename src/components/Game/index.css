@@ -119,3 +119,8 @@
 .start-details-container.ready {
   opacity: 0;
 }
+
+.start-details-text {
+  text-align: center;
+  font-size: 1.4em;
+}
