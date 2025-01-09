@@ -4,6 +4,7 @@ import { GameProvider } from './GameProvider/index';
 import React, { ReactNode, FC } from 'react';
 import { MapProvider } from './MapProvider/index';
 import { ItemProvider } from './ItemProvider/index';
+import { GameSetupProvider } from './GameSetupProvider/index';
 
 // Define UseProviders properly as a functional component
 const Providers: FC<{ children: ReactNode }> = ({ children }) => {
@@ -11,7 +12,9 @@ const Providers: FC<{ children: ReactNode }> = ({ children }) => {
     <MapProvider>
       <ItemProvider>
         <GameProvider>
-          {children}
+          <GameSetupProvider>
+              {children}
+          </GameSetupProvider>
         </GameProvider>
       </ItemProvider>
     </MapProvider>

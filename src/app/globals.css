@@ -11,6 +11,7 @@
   --p1-square: green;
   --p2-square: yellow;
   --empty-square: black;
+  --square-border: white;
 }
 
 @media (prefers-color-scheme: dark) {

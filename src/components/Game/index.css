@@ -2,17 +2,23 @@
 
 .game-board {
   display: grid;
+  position: relative;
+  aspect-ratio: 1 / 1;
+
   width: 100%;
-  height: 100%;
   min-width: 60vw;
   min-height: 60vw;
+  max-width: 90vh;
+  max-height: 90vh;
 }
 
 .game-square {
   width: 100%; 
-  height: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 100%;
+  max-width: 100%;
   background-color: var(--empty-square);
-  box-shadow: inset 0px 0px 2px 0px white;
+  box-shadow: inset 0px 0px 2px 0px var(--square-border);
 }
 
 .game-square.bot {
@@ -29,4 +35,59 @@
 
 .game-square.p2 {
   background-color: var(--p2-square);
+}
+
+.game-board-wrapper {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-setup-button {
+  background-color: black !important;
+  font-weight: bold !important;
+  font-size: 1.2em !important;
+}
+
+.game-home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+}
+
+.game-home-container.large {
+  gap: 6vh;
+}
+
+.game-home-title {
+  font-size: 4em;
+  padding: 20px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.8) 0%,  /* Darkest in the center */
+    rgba(0, 0, 0, 0.2) 60%, /* Fades as it spreads */
+    rgba(0, 0, 0, 0.1) 70%,  /* Darkest in the center */
+    rgba(0, 0, 0, 0) 100%   /* Fully transparent at the edges */
+  );
+}
+
+.setup-label {
+  font-size: 1.4em;
+  padding: 20px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.8) 0%,  /* Darkest in the center */
+    rgba(0, 0, 0, 0.2) 60%, /* Fades as it spreads */
+    rgba(0, 0, 0, 0.1) 70%,  /* Darkest in the center */
+    rgba(0, 0, 0, 0) 100%   /* Fully transparent at the edges */
+  );
+}
+
+.game-setup-button-container {
+  display: flex;
+  gap: 4vw;
 }

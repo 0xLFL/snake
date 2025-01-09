@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import config from '@/app/config.json';
 
 const {
@@ -12,10 +12,13 @@ const {
 export enum GameMode {
   classic,
   vsPlayer,
-  vsBot
+  vsBot,
+  bot,
 }
 
 export enum Status {
+  setup,
+  init,
   pending,
   p1Win,
   p2Win,
@@ -43,12 +46,16 @@ export enum Difficulty {
 
 type MapContextType = {
   initMap: (width: number, height: number, gameMode: GameMode, difficulty: Difficulty) => void;
+  startGame: () => void;
   gameMode: GameMode | null;
   status: Status | null;
   size: Pos | null;
   randomPos: () => Pos;
   updateStatus: (status: Status) => void;
   getChanceFromDifficalty: () => number;
+  p1Ready: () => void;
+  p2Ready: () => void;
+  playAgain: () => void;
 };
 
 /**
@@ -71,9 +78,12 @@ export const parsePos = (formattedPos: string): Pos => {
 
 function useMapHook (): MapContextType {
   const [size, setSize] = useState<Pos | null>(null);
-  const [status, setStatus] = useState<Status | null>(null);
+  const [status, setStatus] = useState<Status>(Status.setup);
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+
+  const [p1Ready_, setP1Ready] = useState<boolean>(false);
+  const [p2Ready_, setP2Ready] = useState<boolean>(false);
 
   /**
    * 
@@ -83,9 +93,30 @@ function useMapHook (): MapContextType {
    */
   const initMap = (width: number, height: number, gameMode: GameMode, difficulty: Difficulty) => {
     setSize({ x: width, y: height });
-    setStatus(Status.pending);
+    setStatus(gameMode === GameMode.bot ? Status.setup : Status.init);
     setGameMode(gameMode);
-    setDifficulty(difficulty)
+    setDifficulty(difficulty);
+
+    setP1Ready(gameMode === GameMode.bot);
+    setP2Ready(gameMode !== GameMode.vsPlayer);
+  }
+
+  const startGame = () => {
+    setStatus(Status.pending);
+  }
+
+  const p1Ready = () => {
+    setP1Ready(true);
+  }
+
+  const p2Ready = () => {
+    setP2Ready(true);
+  }
+
+  const playAgain = () => {
+    setP1Ready(false);
+    setP2Ready(gameMode !== GameMode.vsPlayer);
+    setStatus(Status.init);
   }
 
   /**
@@ -126,14 +157,24 @@ function useMapHook (): MapContextType {
     };
   }
 
+  useEffect(() => {
+    if (p1Ready_ && p2Ready_) {
+      startGame();
+    }
+  }, [p1Ready_, p2Ready_]);
+
   return {
     initMap,
+    startGame,
     gameMode,
     status,
     size,
     randomPos,
     updateStatus,
     getChanceFromDifficalty,
+    p1Ready,
+    p2Ready,
+    playAgain,
   };
 }
 

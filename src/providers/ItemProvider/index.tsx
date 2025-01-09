@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, ReactNode, useContext, useEffect, useReducer, useState } from "react";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useReducer, useState } from "react";
 import { Difficulty, formatPos, GameMode, parsePos, Pos, PosType, Status, useMap } from "../MapProvider/index";
 import config from '@/app/config.json';
 import PriorityQueue from "@/utils/PriorityQueue/index";
@@ -41,13 +41,16 @@ interface ItemContextProps {
   snakes: Record<string, SnakeState>;
   createSnake: (id: string, initialState: SnakeState) => void;
   getSnakePositions: (id: string | null) => Record<string, PosType> | null;
-  next: (id: string) => void;
+  next: () => void;
   setSnakeDir: (dir: string) => void;
   handledKeys: string[];
   eatFruit: (posString: string) => void;
   getItems: () => Record<string, PosType>;
-  init: (width: number, height: number, gameMode: GameMode) => void;
-  getScore: (id: string) => number | undefined
+  init: (width: number, height: number, gameMode: GameMode, difficulty?: Difficulty) => void;
+  getScore: (id: string) => number | undefined,
+  playAgain: () => void;
+  p1Keys: string[];
+  p2Keys: string[];
 }
 
 const snakeReducer = (state: Record<string, SnakeState>, action: { id: string; action: SnakeAction; }) => {
@@ -144,13 +147,13 @@ const useItemHook = (): ItemContextProps => {
    * moves the snake to their next position
    * @param id id of the snake that should move to the next position
    */
-  const next = (id: string): void => {
-    if (!state[id]) {
-      return;
+  const next = useCallback((): void => {
+    for (const id of Object.keys(state)) {
+      if (state[id]) {
+        dispatch({ id, action: { type: 'MOVE_NEXT', payload: next_(id) } });
+      }
     }
-
-    dispatch({ id, action: { type: 'MOVE_NEXT', payload: next_(id) } });
-  };
+  }, [state]);
 
   /**
    * calulates the snakes next position
@@ -169,7 +172,7 @@ const useItemHook = (): ItemContextProps => {
     // square at the same time
     let move: Pos;
     if (snake.posType === PosType.bot) {
-      move = useBot(snake);
+      move = useBot(id);
     } else {
       move = nextMove(snake);
     }
@@ -271,11 +274,11 @@ const useItemHook = (): ItemContextProps => {
   * @param snake Snake object if snake to thats to have their next pos calculated
   * @returns The position the head of the snake shopuld move to next
   */
-  const useBot = (snake: SnakeState): Pos => {
+  const useBot = (id: string): Pos => {
+    const snake = state[id];
     const moveChance = getChanceFromDifficalty();
     const ran =  Math.random();
 
-    console.log(moveChance, ran)
     if (moveChance < ran) {
       return nextMove(snake);
     }
@@ -285,7 +288,7 @@ const useItemHook = (): ItemContextProps => {
       return nextMove(snake);
     }
 
-    dispatch({ id: p2.id , action: { type: 'SET_DIRECTION', payload: nextDir } });
+    dispatch({ id, action: { type: 'SET_DIRECTION', payload: nextDir } });
 
     const { x, y } = getSnakeHead(snake);
     const { x: xOff, y: yOff } = convertDir(nextDir);
@@ -468,7 +471,7 @@ const useItemHook = (): ItemContextProps => {
    * @param key the key the user has just pressed
    */
   const setSnakeDir = (key: string): void => {
-    if (p1Controlls.includes(key)) {
+    if (p1Controlls.includes(key) && state[p1.id].posType !== PosType.bot) {
       dispatch({ id: p1.id , action: { type: 'SET_DIRECTION', payload: mapKey(key) } });
     } else if (p2Controlls.includes(key)) {
       dispatch({ id: (state[p2.id] && state[p2.id].posType !== PosType.bot) ? p2.id : p1.id , action: { type: 'SET_DIRECTION', payload: mapKey(key) } });
@@ -502,15 +505,25 @@ const useItemHook = (): ItemContextProps => {
       id,
     } = p1;
 
-    createSnake(id, {
-      positions: [...startPos],
-      currDir: Dir.down,
-      nextDir: Dir.down,
-      moveCount: 0,
-      posType: PosType.p1,
-      score: 0,
-    });
-    console.log(state)
+    if (gameMode !== GameMode.bot) {
+      createSnake(id, {
+        positions: [...startPos],
+        currDir: Dir.down,
+        nextDir: Dir.down,
+        moveCount: 0,
+        posType: PosType.p1,
+        score: 0,
+      });
+    } else {
+      createSnake(id, {
+        positions: [...startPos],
+        currDir: Dir.down,
+        nextDir: Dir.down,
+        moveCount: 0,
+        posType: PosType.bot,
+        score: 0,
+      });
+    }
 
     return id;
   }
@@ -565,7 +578,6 @@ const useItemHook = (): ItemContextProps => {
    */
   const initFruits = (gameMode: GameMode): void => {
     if (gameMode === GameMode.classic) {
-      console.log(getFreePos())
       return setFruits([
         getFreePos()
       ]);
@@ -591,8 +603,12 @@ const useItemHook = (): ItemContextProps => {
    * @param height number of squars height the game should be
    * @param gameMode type of game that is being played
    */
-  const init = (width: number, height: number, gameMode: GameMode): void => {
-    initMap(width, height, gameMode, Difficulty.normal);
+  const init = (width: number, height: number, gameMode: GameMode, difficulty?: Difficulty): void => {
+    initMap(width, height, gameMode, difficulty || Difficulty.normal);
+    setInitFlag(true);
+  }
+
+  const playAgain = () => {
     setInitFlag(true);
   }
 
@@ -763,10 +779,13 @@ const useItemHook = (): ItemContextProps => {
       ...p1Controlls,
       ...p2Controlls
     ],
+    p1Keys: p1Controlls,
+    p2Keys: p2Controlls,
     getItems,
     eatFruit,
     init,
-    getScore
+    getScore,
+    playAgain,
   }
 }
 

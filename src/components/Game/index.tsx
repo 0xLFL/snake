@@ -5,13 +5,13 @@ import { useGame } from '@/providers/GameProvider/index';
 import { GameMode, PosType } from '@/providers/MapProvider/index';
 import './index.css';
 import GameScores from '../GameScores/index';
+import Overlay from '../Overlay/index';
 
 const Game = () => {
   const {
     width,
     height,
     items,
-    initGame
   } = useGame();
 
   const GenSquares = () => {
@@ -53,21 +53,17 @@ const Game = () => {
   };
 
   return (
-    <div>
-      <button onClick={() => initGame(GameMode.classic)}>Init classic</button>
-      <button onClick={() => initGame(GameMode.vsPlayer)}>Init vs</button>
-      <button onClick={() => initGame(GameMode.vsBot)}>Init vs Bot</button>
-      <div>
-        <GameScores />
-        <div
-          className='game-board'
-          style={{
-            gridTemplateColumns: `repeat(${width}, 1fr)`, // Dynamically set the grid columns
-            gridTemplateRows: `repeat(${height}, 1fr)`, // Dynamically set the grid rows
-          }}
-        >
-          {GenSquares()}
-        </div>
+    <div className='game-board-wrapper'>
+      <Overlay />
+      <GameScores />
+      <div
+        className='game-board'
+        style={{
+          gridTemplateColumns: `repeat(${width}, 1fr)`, // Dynamically set the grid columns
+          gridTemplateRows: `repeat(${height}, 1fr)`, // Dynamically set the grid rows
+        }}
+      >
+        {GenSquares()}
       </div>
     </div>
   );

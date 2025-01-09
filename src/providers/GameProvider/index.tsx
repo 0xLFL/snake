@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { GameMode, PosType, Status, useMap } from '../MapProvider/index';
+import React, { createContext, ReactNode, useContext, useEffect, useState, useCallback } from 'react';
+import { Difficulty, GameMode, PosType, Status, useMap } from '../MapProvider/index';
 import { useItem } from '../ItemProvider/index';
 import config from '@/app/config.json';
 
@@ -10,12 +10,14 @@ const {
 } = config;
 
 type GameContextType = {
-  initGame: (gameMode: GameMode) => void;
+  initGame: (gameMode: GameMode, difficulty?: Difficulty) => void;
+  playAgain: () => void;
   width: number | undefined,
   height: number | undefined,
   items: Record<string, PosType> | undefined;
   highScore: number,
   score: number,
+  restartBot: (delay?: boolean) => void;
 };
 
 function useGameHook (): GameContextType {
@@ -23,6 +25,10 @@ function useGameHook (): GameContextType {
     size,
     status,
     gameMode,
+    playAgain: playAgainMap,
+    p1Ready,
+    p2Ready,
+    updateStatus,
   } = useMap();
   const {
     handledKeys,
@@ -30,58 +36,92 @@ function useGameHook (): GameContextType {
     next,
     init,
     getItems,
-    snakes,
     getScore,
+    playAgain: playAgainItems,
+    p1Keys,
+    p2Keys
   } = useItem();
 
+  const [past, setPast] = useState(0);
+  const [keyPressed, setKeyPressed] = useState(false);
   /**
    * Initialises a game of snake
    */
-  const initGame = (gameMode: GameMode) => {
-    init(20, 20, gameMode);
+  const initGame = (gameMode: GameMode, difficulty?: Difficulty) => {
+    init(20, 20, gameMode, difficulty);
   }
 
-  const next_ = () => {
-    for (const id of Object.keys(snakes)) {
-      next(id);
-    }
+  const playAgain = () => {
+    playAgainMap();
+    playAgainItems();
   }
 
-  // listener for user input
-  useEffect(() => {
-    const setDir = (event: KeyboardEvent) => {
-      if (status !== Status.pending) {
+  const setDir = useCallback(
+    (event: KeyboardEvent) => {
+      if (status === Status.init) {
+        if (p1Keys.includes(event.key)) {
+          p1Ready();
+        } else if (p2Keys.includes(event.key)) {
+          p2Ready()
+        }
+      } else if (status !== Status.pending) {
         return;
-      }
+      } 
 
       if (handledKeys.includes(event.key)) {
+        setKeyPressed(true);
         event.preventDefault();
-        setSnakeDir(event.key);
+        setSnakeDir(event.key); // Update direction
       }
-    };
+    },
+    [status, handledKeys]
+  )
 
-    document.addEventListener('keydown', setDir);
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const nextInterval = setInterval(() => {
-      if (status === Status.pending) {
-        next_();
-      }
-    }, 100);
-    return () => {
-      document.removeEventListener('keydown', setDir);
-      clearInterval(nextInterval);
-    };
-  }, [status, snakes, next_]);
+  const restartBot = async (delay_?: boolean) => {
+    if (delay_) {
+      console.warn('*****')
+      await delay(1500);
+      console.warn('&&&')
+    }
+    init(20, 20, GameMode.bot, Difficulty.easy);
+    updateStatus(Status.setup);
+  }
 
   useEffect(() => {
-    if (status === Status.draw) {
-      window.alert('Game drawn')
-    } else if (status === Status.p1Win) {
-      window.alert('Player 1 Wins')
-    } else if (status === Status.p2Win) {
-      window.alert('Player 2 Wins')
+    document.addEventListener("keydown", setDir);
+    return () => {
+      document.removeEventListener("keydown", setDir);
+    };
+  }, [setDir]);
+
+  useEffect(() => {
+    console.log(status)
+    if (status !== Status.pending && status !== Status.setup) {
+      return;
     }
-  }, [status])
+
+    const interval = setInterval(() => {
+      console.log('####')
+      next();
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [status, next]);
+
+  useEffect(() => {
+    if (status === Status.setup) {
+      restartBot()
+      updateStatus(Status.setup);
+    }
+  }, [])
+
+  useEffect(() => {
+    if (status === Status.p2Win && gameMode === GameMode.bot) {
+      restartBot(true)
+    }
+  }, [status, gameMode, restartBot])
 
   useEffect(() => {
     const highScore = parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0');
@@ -98,6 +138,8 @@ function useGameHook (): GameContextType {
     items: getItems(),
     highScore: parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0'),
     score: getScore(p1.id) || 0,
+    playAgain,
+    restartBot,
   };
 }
 
