@@ -31,11 +31,13 @@ interface SnakeState {
   score: number;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface SnakeAction {
   type: 'SET_DIRECTION' | 'MOVE_NEXT' | 'RESET' | 'INIT';
   payload?: any;
   initState?: Record<string, SnakeState>;
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 interface ItemContextProps {
   snakes: Record<string, SnakeState>;
@@ -176,7 +178,7 @@ const useItemHook = (): ItemContextProps => {
     // square at the same time
     let move: Pos;
     if (snake.posType === PosType.bot) {
-      move = useBot(id);
+      move = moveBot(id);
     } else {
       move = nextMove(snake);
     }
@@ -278,7 +280,7 @@ const useItemHook = (): ItemContextProps => {
   * @param snake Snake object if snake to thats to have their next pos calculated
   * @returns The position the head of the snake shopuld move to next
   */
-  const useBot = (id: string): Pos => {
+  const moveBot = (id: string): Pos => {
     const snake = state[id];
     const moveChance = getChanceFromDifficalty();
     const ran =  Math.random();
@@ -622,7 +624,7 @@ const useItemHook = (): ItemContextProps => {
    * @returns Pos, that currently doesn't currently have any items in at pos 
    */
   const getFreePos = (): Pos => {
-    let map = getItems();
+    const map = getItems();
 
     let pos = randomPos();
     while(map[formatPos(pos)]) {

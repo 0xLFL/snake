@@ -4,8 +4,6 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import config from '@/app/config.json';
 
 const {
-  p1,
-  p2,
   difficulty: diff
 } = config;
 
@@ -129,11 +127,11 @@ function useMapHook (): MapContextType {
     setStatus(status);
   }
 
-  const getChanceFromDifficalty = () => {
+  const getChanceFromDifficalty = (): number => {
     switch (difficulty) {
       case Difficulty.easy: return diff.easy;
-      case Difficulty.normal: return diff.normal;
       case Difficulty.hard: return diff.hard;
+      default: return diff.normal;
     }
   }
 
@@ -182,7 +180,7 @@ function useMapHook (): MapContextType {
   };
 }
 
-const MapContext = createContext(null);
+const MapContext = createContext<MapContextType | null>(null);
 
 const useMap = (): MapContextType => {
   const context = useContext(MapContext);

@@ -1,7 +1,7 @@
 'use client';
 
 import { GameMode, Status, useMap } from '@/providers/MapProvider/index';
-import React, { useState } from 'react';
+import React from 'react';
 import HomeOverlay from '../HomeOverlay/index';
 import SelectDifficulty from '../SelectDifficulty/index';
 import SelectGameMode from '../SelectGameMode/index';

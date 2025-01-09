@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, ReactNode, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useCallback, useState } from 'react';
 import { Difficulty, GameMode, PosType, Status, useMap } from '../MapProvider/index';
 import { useItem } from '../ItemProvider/index';
 import config from '@/app/config.json';
@@ -41,6 +41,8 @@ function useGameHook (): GameContextType {
     p1Keys,
     p2Keys,
   } = useItem();
+
+  const [highScore, setHighScore] = useState(0);
 
   /**
    * Initialises a game of snake
@@ -124,19 +126,23 @@ function useGameHook (): GameContextType {
     }
   }, [getScore(p1.id)]);
 
+  useEffect(() => {
+    setHighScore(parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0'));
+  }, [gameMode])
+
   return {
     initGame,
     width: size?.x,
     height: size?.y,
     items: getItems(),
-    highScore: parseInt(localStorage.getItem(`high_score_${gameMode}`) || '0'),
+    highScore,
     score: getScore(p1.id) || 0,
     playAgain,
     restartBot,
   };
 }
 
-const GameContext = createContext(null);
+const GameContext = createContext<GameContextType | null>(null);
 
 const useGame = (): GameContextType => {
   const context = useContext(GameContext);
