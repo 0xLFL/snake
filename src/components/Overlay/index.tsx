@@ -1,7 +1,7 @@
 'use client';
 
 import { GameMode, Status, useMap } from '@/providers/MapProvider/index';
-import React, { useState } from 'react';
+import React from 'react';
 import HomeOverlay from '../HomeOverlay/index';
 import SelectDifficulty from '../SelectDifficulty/index';
 import SelectGameMode from '../SelectGameMode/index';
@@ -20,15 +20,31 @@ const Overlay = () => {
   } = useGameSetup();
 
   const gameOver = status === Status.p1Win || status === Status.p2Win || status === Status.draw;
-  const hidePage = (gameOver || status === Status.init) && gameMode !== GameMode.bot;
+  const startInfo = status === Status.init || status === Status.pending
+  const hidePage = (gameOver || startInfo) && gameMode !== GameMode.bot;
   return (
-    <div className={`overlay-container ${(status !== Status.pending || gameMode === GameMode.bot) ? 'open' : 'closed'}`}>
-      { page === Page.home && !hidePage && <HomeOverlay /> }
-      { page === Page.selectMode && !hidePage && <SelectGameMode /> }
-      { page === Page.selectDifficaulty && !hidePage && <SelectDifficulty /> }
-      { status === Status.init && gameMode !== GameMode.bot && <StartGameInfo /> }
+    <div className={`overlay-container`}>
+      { page === Page.home &&
+        !hidePage &&
+        <HomeOverlay />
+      }
+      { page === Page.selectMode &&
+        !hidePage &&
+        <SelectGameMode />
+      }
+      { page === Page.selectDifficaulty &&
+        !hidePage &&
+        <SelectDifficulty />
+      }
+      { startInfo &&
+        gameMode !== GameMode.bot &&
+        <StartGameInfo />
+      }
 
-      { gameOver && gameMode !== GameMode.bot && <GameOver /> }
+      { gameOver &&
+        gameMode !== GameMode.bot &&
+        <GameOver />
+      }
     </div>
   );
 };

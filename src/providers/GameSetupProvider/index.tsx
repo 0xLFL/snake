@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { useGame } from '../GameProvider/index';
 import { Status, useMap } from '../MapProvider/index';
 
@@ -19,7 +19,6 @@ type SetupContextType = {
 
 function useSetupHook (): SetupContextType {
   const {
-    updateStatus,
     status
   } = useMap();
   const {
@@ -56,7 +55,7 @@ function useSetupHook (): SetupContextType {
   };
 }
 
-const SetupContext = createContext(null);
+const SetupContext = createContext<SetupContextType | null>(null);
 
 const useGameSetup = (): SetupContextType => {
   const context = useContext(SetupContext);

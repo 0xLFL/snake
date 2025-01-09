@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useGame } from '@/providers/GameProvider/index';
-import { GameMode, PosType } from '@/providers/MapProvider/index';
+import { PosType } from '@/providers/MapProvider/index';
 import './index.css';
 import GameScores from '../GameScores/index';
 import Overlay from '../Overlay/index';
