@@ -335,7 +335,8 @@ const useItemHook = (): ItemContextProps => {
 
     queue.push(start, calHeuristic(cost[startString], start, goal));
 
-    while(!queue.isEmpty()) {
+    const timeLimit = Date.now() + 30;
+    while(!queue.isEmpty() && Date.now() < timeLimit) {
       const val = queue.pop();
       if (!val) {
         return;
@@ -581,7 +582,7 @@ const useItemHook = (): ItemContextProps => {
    * @param gameMode the selected game mode
    */
   const initFruits = (gameMode: GameMode): void => {
-    if (gameMode === GameMode.classic) {
+    if (gameMode === GameMode.classic || gameMode === GameMode.bot) {
       return setFruits([
         getFreePos()
       ]);

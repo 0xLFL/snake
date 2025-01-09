@@ -55,6 +55,8 @@ type MapContextType = {
   getChanceFromDifficalty: () => number;
   p1Ready: () => void;
   p2Ready: () => void;
+  p1Ready_: boolean;
+  p2Ready_: boolean;
   playAgain: () => void;
 };
 
@@ -174,6 +176,8 @@ function useMapHook (): MapContextType {
     getChanceFromDifficalty,
     p1Ready,
     p2Ready,
+    p1Ready_,
+    p2Ready_,
     playAgain,
   };
 }
