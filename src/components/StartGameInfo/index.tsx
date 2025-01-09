@@ -21,7 +21,7 @@ const StartGameInfo = () => {
           width="250"
           height="250"
         />
-        <p>
+        <p className='start-details-text'>
           {
             gameMode === GameMode.vsPlayer ? 
             'Player 1 p' : 'P'
@@ -39,7 +39,7 @@ const StartGameInfo = () => {
           width="250"
           height="250"
         />
-        <p>Player 2 press a key to start</p>
+        <p className='start-details-text'>Player 2 press a key to start</p>
       </div>
     }
     </div>
