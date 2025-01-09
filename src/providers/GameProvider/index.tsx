@@ -123,6 +123,7 @@ function useGameHook (): GameContextType {
     const score = getScore(p1.id) || 0;
     if (score > highScore) {
       localStorage.setItem(`high_score_${gameMode}`, score.toString());
+      setHighScore(highScore)
     }
   }, [getScore(p1.id)]);
 
