@@ -1,36 +1,53 @@
+
+# Snake
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+A modern take of the classic game snake, with new Vs modes
+
+## Description
+
+This is a new take on the classic game of snake, whilst it still has the classic gamemode within it, there is also 2 new gamemodes that are not found in the original version, they are
+* Vs Computer - There is a second snake on the board that is oporated by the computer, the aim of the game is to surive longer that the bot.
+* Vs Player - Like Vs Computer there is a second snake on the board but this one is controlled by your friend sitting next to you, the same rules as Vs computer applies the player that surives the longest wins. Theere is also a score board to keep track of who is winner over the span of multipul games
 
 ## Getting Started
 
-First, run the development server:
+### Dependencies
+To run the application you will need to install:
+* Node.Js: v18.20.4
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Installing
+
+Get the code by either cloning this repository using git
+
+```
+git clone https://github.com/0xLFL/snake.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Running the Appilcation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+How to run the program
+```
+npm run build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm run start
+```
+Appilcation will run on [localhost:3000](http://localhost:3000)
 
-## Learn More
+## Authors
 
-To learn more about Next.js, take a look at the following resources:
+Contributors names and contact info
+* Luke Walker 
+    * [Linkedin](www.linkedin.com/in/luke-walker-914b2a279)
+    * [GitHub](https://github.com/0xLFL)
+    * Email - lukwalk26@gmail.com
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Version History
+* 0.1
+    * Initial Release
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Acknowledgments
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Inspiration, code snippets, etc.
+* [example-frontend-next-js](https://github.com/sanity-io/example-frontend-next-js)
+* [example-readme](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc)
