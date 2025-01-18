@@ -43,7 +43,7 @@ Contributors names and contact info
     * Email - lukwalk26@gmail.com
 
 ## Version History
-* 0.1
+* 0.1.0
     * Initial Release
 
 ## Acknowledgments
